@@ -1,4 +1,4 @@
-# az-core
+# AI
 Set of classes for developing AI tools.
 
 ## Install
