@@ -1,9 +1,9 @@
 <?php
 
-namespace Az\AI\OpenAI;
+namespace AZ\AI\OpenAI;
 
 use Exception;
-use Az\Project\Env;
+use AZ\Project\Env;
 
 
 class ChatGPT
