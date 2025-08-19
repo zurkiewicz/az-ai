@@ -1,0 +1,33 @@
+{
+    "name": "az/ai",
+    "description": "Set of classes for developing AI tools.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Az\\AI\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Adrian Zurkiewicz",
+            "email": "adrian@zurkiewicz.net"
+        }
+    ],
+    "minimum-stability": "stable",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/zurkiewicz/az-core.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/zurkiewicz/az-project.git"
+        }        
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6",
+        "az/project": "^1.0",
+        "az/core": "^1.0"
+    }
+}
