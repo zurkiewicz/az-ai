@@ -24,3 +24,8 @@ Run composer
 ```bash
 composer require az/ai:^1.0
 ```
+
+Add to .env
+```plane
+OPENAI_TOKEN=sk-proj-...
+```
