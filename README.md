@@ -28,4 +28,7 @@ composer require az/ai:^1.0
 Add to .env
 ```plane
 OPENAI_TOKEN=sk-proj-...
+
+# Default model
+OPENAI_MODEL=gpt-5-mini
 ```
