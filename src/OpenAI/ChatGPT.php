@@ -55,7 +55,6 @@ class ChatGPT
     }
 
 
-
     /**
      * Set default model.
      *
@@ -74,9 +73,9 @@ class ChatGPT
      *
      * @param string $prompt The text prompt to send
      * @param string $model  The model to use (left empty to default model use)
-     * @return string Response text from OpenAI
+     * @return string|null Response text from OpenAI or null if canceled.
      */
-    function prompt(string $prompt, ?string $model = null): string
+    function prompt(string $prompt, ?string $model = null): ?string
     {
 
         if (!$model) {
@@ -86,7 +85,7 @@ class ChatGPT
 
         $currentDateTime = date("Y-m-d H:i:s");
 
-        $data = [
+        $query = [
             "model" => $model,
             "messages" => [
                 ["role" => "system", "content" => "You are a helpful assistant. Current date and time: {$currentDateTime}"],
@@ -94,25 +93,31 @@ class ChatGPT
             ]
         ];
 
-        return $this->completions($data, $model);
+        return $this->completions($query, $model);
     }
 
 
     /**
      * Function to connect to OpenAI API
      *
-     * @param array $data The data to send
-     * @return string Response text from OpenAI
+     * @param array $query The data to send.
+     * @return string|null Response text from OpenAI or null if canceled.
      * @throws Exception
-     */
-    function completions(array $data): string
+     */    
+    function completions(array $query): ?string
     {
         $url = "https://api.openai.com/v1/chat/completions";
 
-        if (!isset($data['model'])) {
+        if (!isset($query['model'])) {
 
-            $data['model'] = $this->getModel();
+            $query['model'] = $this->getModel();
         }
+
+        if (!$this->onQuery($query)) {
+
+            return null;
+        }
+
 
         $token = (new Env())->get('OPENAI_TOKEN');
 
@@ -131,7 +136,7 @@ class ChatGPT
         ]);
 
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($query));
 
         // Execute request
         $response = curl_exec($ch);
@@ -148,7 +153,7 @@ class ChatGPT
         if (is_array($result)) {
 
             $this->response = $result;
-            $this->onResponse($result);
+            $this->onResponse($result, $query);
         }
 
         if (isset($result['error'])) {
@@ -166,13 +171,27 @@ class ChatGPT
         return $result['choices'][0]['message']['content'];
     }
 
+
+    /**
+     * Called before API query.
+     *
+     * @param array $query
+     * @return bool Put false to cancel the query.
+     */
+    protected function onQuery(array & $query): bool
+    {
+
+        return true;
+    }    
+
     /**
      * Called if the API responded.
      *
      * @param array $response
+     * @param array $query
      * @return void
      */
-    protected function onResponse(array $response): void
+    protected function onResponse(array & $response, array & $query): void
     {
 
     }
