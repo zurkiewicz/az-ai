@@ -19,6 +19,11 @@ jobs:
           php-version: '8.2'
           tools: composer
 
+      - name: Repository credentials
+        run: |
+          composer config --global repositories.az composer https://repo.sabau360.net/repository/sabau360/
+          composer config --global http-basic.repo.sabau360.net ${{ secrets.NEXUS_USERNAME }} ${{ secrets.NEXUS_PASSWORD }}
+
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
 
