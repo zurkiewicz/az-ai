@@ -98,6 +98,25 @@ class ChatGPT
 
 
     /**
+     *
+     * @return string
+     * @throws Exception
+     */
+    protected function getToken(): string {
+
+        $result = (new Env())->get('OPENAI_TOKEN');
+
+        if (!$result) {
+
+            throw new Exception("No OPENAI_TOKEN found in .env", 1);
+        }        
+
+        return $result;
+    }
+
+
+
+    /**
      * Function to connect to OpenAI API
      *
      * @param array $query The data to send.
@@ -118,13 +137,7 @@ class ChatGPT
             return null;
         }
 
-
-        $token = (new Env())->get('OPENAI_TOKEN');
-
-        if (!$token) {
-
-            throw new Exception("No OPENAI_TOKEN found in .env", 1);
-        }
+        $token = $this->getToken();
 
         // Initialize curl
         $ch = curl_init($url);
