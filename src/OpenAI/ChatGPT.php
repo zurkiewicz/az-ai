@@ -23,7 +23,7 @@ class ChatGPT
 
 
     /**
-     * Get las API response or null.
+     * Get last API response or null.
      *
      * @return array|null
      */
@@ -48,7 +48,7 @@ class ChatGPT
         }
 
         if (!$result) {
-            $result = 'gpt-4.1-mini';
+            $result = 'gpt-5-nano';
         }
 
         return $result;
