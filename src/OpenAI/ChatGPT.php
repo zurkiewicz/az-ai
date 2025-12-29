@@ -2,37 +2,8 @@
 
 namespace AZ\AI\OpenAI;
 
-use AZ\Project\Env;
-
-class ChatGPT
+class ChatGPT extends Model
 {
-
-    /**
-     * Model
-     *
-     * @var string|null
-     */
-    private $model;
-
-    /**
-     * Last API response.
-     *
-     * @var array|null
-     */
-    private $response;
-
-
-    /**
-     * Get last API response or null.
-     *
-     * @return array|null
-     */
-    public function getResponse(): ?array
-    {
-        return $this->response;
-    }
-
-
 
     /**
      * Get default model.
@@ -54,28 +25,14 @@ class ChatGPT
         return $result;
     }
 
-
-    /**
-     * Set default model.
-     *
-     * @param string $model
-     * @return void
-     */
-    public function setModel(string $model): void
-    {
-
-        $this->model = $model;
-    }
-
-
-    /**
+     /**
      * Function to connect to OpenAI API
      *
      * @param string $prompt The text prompt to send
      * @param string $model  The model to use (left empty to default model use)
      * @return string|null Response text from OpenAI or null if canceled.
      */
-    function prompt(string $prompt, ?string $model = null): ?string
+    public function prompt(string $prompt, ?string $model = null): ?string
     {
 
         if (!$model) {
@@ -93,29 +50,10 @@ class ChatGPT
             ]
         ];
 
-        return $this->completions($query, $model);
+        return $this->completions($query);
     }
-
-
-    /**
-     *
-     * @return string
-     * @throws Exception
-     */
-    protected function getToken(): string {
-
-        $result = (new Env())->get('OPENAI_TOKEN');
-
-        if (!$result) {
-
-            throw new Exception("No OPENAI_TOKEN found in .env", 1);
-        }        
-
-        return $result;
-    }
-
-
-
+    
+    
     /**
      * Function to connect to OpenAI API
      *
@@ -123,7 +61,7 @@ class ChatGPT
      * @return string|null Response text from OpenAI or null if canceled.
      * @throws Exception
      */    
-    function completions(array $query): ?string
+    public function completions(array $query): ?string
     {
         $url = "https://api.openai.com/v1/chat/completions";
 
@@ -151,6 +89,8 @@ class ChatGPT
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($query));
 
+        $start = microtime(true);
+
         // Execute request
         $response = curl_exec($ch);
 
@@ -160,13 +100,16 @@ class ChatGPT
 
         curl_close($ch);
 
+        $this->delay = (microtime(true) - $start) * 1000;
+
         // Decode JSON response
         $result = json_decode($response, true);
 
         if (is_array($result)) {
 
-            $this->response = $result;
+            
             $this->onResponse($result, $query);
+            $this->response = $result;
         }
 
         if (isset($result['error'])) {
@@ -182,30 +125,6 @@ class ChatGPT
         }
 
         return $result['choices'][0]['message']['content'];
-    }
-
-
-    /**
-     * Called before API query.
-     *
-     * @param array $query
-     * @return bool Put false to cancel the query.
-     */
-    protected function onQuery(array & $query): bool
-    {
-
-        return true;
     }    
 
-    /**
-     * Called if the API responded.
-     *
-     * @param array $response
-     * @param array $query
-     * @return void
-     */
-    protected function onResponse(array & $response, array & $query): void
-    {
-
-    }
 }
