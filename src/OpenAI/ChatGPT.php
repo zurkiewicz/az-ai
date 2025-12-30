@@ -2,6 +2,8 @@
 
 namespace AZ\AI\OpenAI;
 
+use AZ\Project\Env;
+
 class ChatGPT extends Model
 {
 

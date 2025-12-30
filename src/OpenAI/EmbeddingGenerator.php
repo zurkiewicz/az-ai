@@ -1,6 +1,8 @@
 <?php
 namespace AZ\AI\OpenAI;
 
+use AZ\Project\Env;
+
 class EmbeddingGenerator extends Model
 {
 
